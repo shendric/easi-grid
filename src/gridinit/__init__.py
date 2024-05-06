@@ -2,7 +2,10 @@
 
 import numpy as np
 from typing import Tuple, Union, Dict
-from pydantic import BaseModel, Field, field_validator, model_validator, PositiveFloat, ConfigDict
+from pydantic import (
+    BaseModel, Field, field_validator, model_validator, ConfigDict,
+    computed_field, PositiveFloat
+)
 from pyproj import CRS, Proj
 from pyproj.exceptions import CRSError
 from functools import cached_property
@@ -17,6 +20,7 @@ __author__ = "Stefan Hendricks"
 class GridDefinition(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
     epsg: int = Field(description="epsg code")
     extent_m: Tuple[Real, Real, Real, Real] = Field(
         description="[x_min, x_max, y_min, y_max] in projection coordinates (meter)"
@@ -59,13 +63,20 @@ class GridDefinition(BaseModel):
     def proj(self) -> Proj:
         return Proj(self.crs)
 
-    @cached_property
+    @computed_field
+    @property
     def num_x(self) -> int:
         return int((self.extent_m[1]-self.extent_m[0])/self.resolution_m)
 
-    @cached_property
+    @computed_field
+    @property
     def num_y(self) -> int:
         return int((self.extent_m[3]-self.extent_m[2])/self.resolution_m)
+
+    @computed_field
+    @property
+    def name(self) -> str:
+        return self.crs.name
 
 
 class GridData(object):
