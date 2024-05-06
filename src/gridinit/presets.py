@@ -15,7 +15,6 @@ class GridPresetEntry:
     extent_m: Tuple[Real, Real, Real, Real]
     resolution_m: Real
 
-    @property
     def asdict(self):
         return asdict(self)
 

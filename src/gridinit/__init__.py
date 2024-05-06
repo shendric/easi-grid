@@ -2,14 +2,13 @@
 
 import numpy as np
 from typing import Tuple, Union, Dict
-from pydantic import BaseModel, Field, field_validator, model_validator, PositiveFloat
+from pydantic import BaseModel, Field, field_validator, model_validator, PositiveFloat, ConfigDict
 from pyproj import CRS, Proj
 from pyproj.exceptions import CRSError
 from functools import cached_property
-
+from numbers import Real
 from .presets import GridPresets, GridPresetEntry
 
-float_or_int = Union[float, int]
 
 __all__ = ["Grid", "GridDefinition", "GridData", "GridPresets"]
 __author__ = "Stefan Hendricks"
@@ -17,14 +16,11 @@ __author__ = "Stefan Hendricks"
 
 class GridDefinition(BaseModel):
 
-    epsg: str = Field(
-        description="epsg code"
-    )
-
-    extent_m: Tuple[float_or_int, float_or_int, float_or_int, float_or_int] = Field(
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    epsg: int = Field(description="epsg code")
+    extent_m: Tuple[Real, Real, Real, Real] = Field(
         description="[x_min, x_max, y_min, y_max] in projection coordinates (meter)"
     )
-
     resolution_m: PositiveFloat = Field(
         description="Spatial resolution in meter (isotropic grid resolution)"
     )
@@ -76,7 +72,7 @@ class GridData(object):
 
     def __init__(self, grid_def: GridDefinition):
         self.grid_def = grid_def
-        self._lons, self._lats = self._compute_grid_coordinates()
+        self.lon, self.lat = self._compute_grid_coordinates()
 
     def _compute_grid_coordinates(self) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -132,8 +128,8 @@ class Grid(object):
     def __init__(
             self,
             epsg: str,
-            extent_m: Tuple[float_or_int, float_or_int, float_or_int, float_or_int],
-            resolution_m: float_or_int
+            extent_m: Tuple[Real, Real, Real, Real],
+            resolution_m: Real
     ):
         self._def = GridDefinition(
             epsg=epsg,
@@ -178,6 +174,9 @@ class Grid(object):
 
     def get_data(self) -> GridData:
         return self._data
+
+    def get_definition(self) -> GridDefinition:
+        return self._def
 
     def proj(
             self,

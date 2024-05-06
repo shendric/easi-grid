@@ -38,6 +38,7 @@ tests = [
     "coverage"
 ]
 dev = [
-    "matplotlib"
-    ""
+    "matplotlib",
+    "notebook",
+    "ipykernel"
 ]
