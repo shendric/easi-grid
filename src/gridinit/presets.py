@@ -23,9 +23,9 @@ class GridPresetEntry:
 class GridPresets:
     cci_ease2_nh_12p5km: GridPresetEntry = GridPresetEntry(6931, (-5_400_000, 5_400_000, -5_400_000, 5_400_000), 12_500)
     cci_ease2_nh_25km: GridPresetEntry = GridPresetEntry(6931, (-5_400_000, 5_400_000, -5_400_000, 5_400_000), 25_000)
-    cci_ease2_sh_12p5km: GridPresetEntry = GridPresetEntry(6931, (-5_400_000, 5_400_000, -5_400_000, 5_400_000), 12_500)
-    cci_ease2_sh_25km: GridPresetEntry = GridPresetEntry(6931, (-5_400_000, 5_400_000, -5_400_000, 5_400_000),  25_000)
-    cci_ease2_sh_50km: GridPresetEntry = GridPresetEntry(6931, (-5_400_000, 5_400_000, -5_400_000, 5_400_000), 50_000)
+    cci_ease2_sh_12p5km: GridPresetEntry = GridPresetEntry(6932, (-5_400_000, 5_400_000, -5_400_000, 5_400_000), 12_500)
+    cci_ease2_sh_25km: GridPresetEntry = GridPresetEntry(6932, (-5_400_000, 5_400_000, -5_400_000, 5_400_000),  25_000)
+    cci_ease2_sh_50km: GridPresetEntry = GridPresetEntry(6932, (-5_400_000, 5_400_000, -5_400_000, 5_400_000), 50_000)
 
     @classmethod
     def names(cls) -> List[str]:
