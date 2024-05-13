@@ -10,7 +10,10 @@ from pyproj import CRS, Proj
 from pyproj.exceptions import CRSError
 from functools import cached_property
 from numbers import Real
-from .presets import GridPresets, GridPresetEntry
+from pyresample import geometry
+
+
+from gridinit.presets import GridPresets, GridPresetEntry
 
 
 __all__ = ["Grid", "GridDefinition", "GridData", "GridPresets"]
@@ -185,6 +188,15 @@ class Grid(object):
 
     def get_data(self) -> GridData:
         return self._data
+
+    def get_pyresample_geometry(self) -> geometry.AreaDefinition:
+        grid_def = self.get_definition()
+        xmin, xmax, ymin, ymax = grid_def.extent_m
+        return geometry.AreaDefinition(
+            grid_def.id, grid_def.name, grid_def.crs.to_cf()["grid_mapping_name"],
+            grid_def.crs.to_dict(), grid_def.num_x, grid_def.num_y,
+            [xmin, ymin, xmax, ymax]
+        )
 
     def get_definition(self) -> GridDefinition:
         return self._def
