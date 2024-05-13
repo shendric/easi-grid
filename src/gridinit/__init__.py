@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import contextlib
 from typing import Tuple, Union, Dict
 from pydantic import (
     BaseModel, Field, field_validator, model_validator, ConfigDict,
@@ -92,6 +93,9 @@ class GridData(object):
         self.grid_def = grid_def
         self.lon, self.lat = self._compute_grid_coordinates()
 
+    def get_nan_array(self) -> np.ndarray:
+        return np.full((self.grid_def.num_y, self.grid_def.num_x), np.nan)
+
     def _compute_grid_coordinates(self) -> Tuple[np.ndarray, np.ndarray]:
         """
         Returns longitude/latitude points for each grid cell
@@ -107,7 +111,8 @@ class GridData(object):
     @cached_property
     def grid_mapping(self) -> Tuple[str, Dict]:
         grid_mapping_dict = self.grid_def.crs.to_cf()
-        grid_mapping_dict["proj4_str"] = self.grid_def.crs.to_proj4()
+        with contextlib.suppress(UserWarning):
+            grid_mapping_dict["proj4_str"] = self.grid_def.crs.to_proj4()
         grid_mapping_name = str(grid_mapping_dict["grid_mapping_name"])
         grid_mapping_dict.pop("crs_wkt")
         return grid_mapping_name, grid_mapping_dict
@@ -192,6 +197,9 @@ class Grid(object):
 
     def get_data(self) -> GridData:
         return self._data
+
+    def get_nan_array(self) -> np.ndarray:
+        return self._data.get_nan_array()
 
     def get_pyresample_geometry(self) -> geometry.AreaDefinition:
         grid_def = self.get_definition()
