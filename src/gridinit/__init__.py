@@ -81,6 +81,10 @@ class GridDefinition(BaseModel):
     def name(self) -> str:
         return self.crs.name
 
+    @cached_property
+    def id(self) -> str:
+        return f"{self.name} {self.extent_m} @ {self.resolution_m}m ({self.num_x}x{self.num_x}"
+
 
 class GridData(object):
 
@@ -103,8 +107,8 @@ class GridData(object):
     @cached_property
     def grid_mapping(self) -> Tuple[str, Dict]:
         grid_mapping_dict = self.grid_def.crs.to_cf()
+        grid_mapping_dict["proj4_str"] = self.grid_def.crs.to_proj4()
         grid_mapping_name = str(grid_mapping_dict["grid_mapping_name"])
-        grid_mapping_dict.pop("grid_mapping_name")
         grid_mapping_dict.pop("crs_wkt")
         return grid_mapping_name, grid_mapping_dict
 
@@ -218,6 +222,9 @@ class Grid(object):
         """
         projx, projy = self._def.proj(longitude, latitude, **kwargs)
         return projx, projy
+
+    def __repr__(self) -> str:
+        return f"gridinit.Grid: {self._def.id}"
 
 #     def grid_indices(self, longitude, latitude):
 #         """
