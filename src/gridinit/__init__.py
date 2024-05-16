@@ -2,7 +2,7 @@
 
 import numpy as np
 import contextlib
-from typing import Tuple, Union, Dict
+from typing import Tuple, Union, Dict, Optional
 from pydantic import (
     BaseModel, Field, field_validator, model_validator, ConfigDict,
     computed_field, PositiveFloat
@@ -32,6 +32,7 @@ class GridDefinition(BaseModel):
     resolution_m: PositiveFloat = Field(
         description="Spatial resolution in meter (isotropic grid resolution)"
     )
+    id: Optional[str] = None
 
     @field_validator("epsg")
     @classmethod
@@ -83,7 +84,7 @@ class GridDefinition(BaseModel):
         return self.crs.name
 
     @cached_property
-    def id(self) -> str:
+    def repr(self) -> str:
         return f"{self.name} {self.extent_m} @ {self.resolution_m}m ({self.num_x}x{self.num_x}"
 
 
@@ -152,12 +153,14 @@ class Grid(object):
             self,
             epsg: str,
             extent_m: Tuple[Real, Real, Real, Real],
-            resolution_m: Real
+            resolution_m: Real,
+            grid_id: str = None
     ):
         self._def = GridDefinition(
             epsg=epsg,
             extent_m=extent_m,
-            resolution_m=resolution_m
+            resolution_m=resolution_m,
+            id=grid_id
         )
         self._data = GridData(
             self._def
@@ -231,8 +234,12 @@ class Grid(object):
         projx, projy = self._def.proj(longitude, latitude, **kwargs)
         return projx, projy
 
+    @property
+    def id(self) -> str:
+        return str(self._def.id)
+
     def __repr__(self) -> str:
-        return f"gridinit.Grid: {self._def.id}"
+        return f"gridinit.Grid: {self._def.repr}"
 
 #     def grid_indices(self, longitude, latitude):
 #         """
