@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import xarray as xr
 import contextlib
-from typing import Tuple, Union, Dict, Optional
+from typing import Tuple, Union, Dict, Optional, Literal
 from pydantic import (
     BaseModel, Field, field_validator, model_validator, ConfigDict,
     computed_field, PositiveFloat
@@ -96,6 +97,46 @@ class GridData(object):
 
     def get_nan_array(self) -> np.ndarray:
         return np.full((self.grid_def.num_y, self.grid_def.num_x), np.nan)
+
+    def get_nc_coords(
+            self,
+            time_coord: xr.Variable = None,
+            time_dim_name: str = "time",
+            unit: Literal["m", "km"] = "km"
+    ) -> Dict[str, xr.Variable]:
+
+        if unit == "m":
+            xc, yc = self.xc, self.yc
+        elif unit == "km":
+            xc, yc = self.xc_km, self.yc_km
+        else:
+            raise ValueError(f"Unknown {unit=}, must be `m` or `km`")
+
+        coord_dict = {
+            "xc": xr.Variable(
+                dims=("xc",),
+                data=xc,
+                attrs={
+                    "axis": "X",
+                    "units": "km",
+                    "long_name": "x coordinate in Cartesian system",
+                    "standard_name": "projection_x_coordinate",
+                }
+            ),
+            "yc": xr.Variable(
+                dims=("yc",),
+                data=yc,
+                attrs={
+                    "axis": "Y",
+                    "units": "km",
+                    "long_name": "y coordinate in Cartesian system",
+                    "standard_name": "projection_y_coordinate",
+                }
+            )
+        }
+        if time_coord is not None:
+            coord_dict[time_dim_name] = time_coord
+        return coord_dict
 
     def _compute_grid_coordinates(self) -> Tuple[np.ndarray, np.ndarray]:
         """
