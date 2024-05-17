@@ -98,10 +98,30 @@ class GridData(object):
     def get_nan_array(self) -> np.ndarray:
         return np.full((self.grid_def.num_y, self.grid_def.num_x), np.nan)
 
+    def get_lonlat_nc_vars(self) -> Dict[str, xr.Variable]:
+        return {
+            "lon": xr.Variable(
+                dims=("xc", "yc"),
+                data=self.lon,
+                attrs={
+                    "units": "degrees_east",
+                    "long_name": "longitude coordinate",
+                    "standard_name": "longitude",
+                }
+            ),
+            "lat": xr.Variable(
+                dims=("xc", "yc"),
+                data=self.lat,
+                attrs={
+                    "units": "degrees_north",
+                    "long_name": "latitude coordinate",
+                    "standard_name": "latitude",
+                }
+            ),
+        }
+
     def get_nc_coords(
             self,
-            time_coord: xr.Variable = None,
-            time_dim_name: str = "time",
             unit: Literal["m", "km"] = "km"
     ) -> Dict[str, xr.Variable]:
 
@@ -134,8 +154,6 @@ class GridData(object):
                 }
             )
         }
-        if time_coord is not None:
-            coord_dict[time_dim_name] = time_coord
         return coord_dict
 
     def _compute_grid_coordinates(self) -> Tuple[np.ndarray, np.ndarray]:
