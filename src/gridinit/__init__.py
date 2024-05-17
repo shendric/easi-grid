@@ -242,8 +242,8 @@ class Grid(object):
     def get_data(self) -> GridData:
         return self._data
 
-    def get_nan_array(self) -> np.ndarray:
-        return self._data.get_nan_array()
+    def get_nan_array(self, time_dim=False) -> np.ndarray:
+        return self._data.get_nan_array() if not time_dim else [self._data.get_nan_array()]
 
     def get_pyresample_geometry(self) -> geometry.AreaDefinition:
         grid_def = self.get_definition()
