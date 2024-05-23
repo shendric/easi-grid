@@ -297,6 +297,10 @@ class Grid(object):
     def id(self) -> str:
         return str(self._def.id)
 
+    @cached_property
+    def array_shape(self) -> Tuple[int, int]:
+        return self._def.num_x, self._def.num_y
+
     def __repr__(self) -> str:
         return f"gridinit.Grid: {self._def.repr}"
 
