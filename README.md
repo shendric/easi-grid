@@ -1,3 +1,3 @@
-# gridinit
+# easi-grid
 
-A small python tool to initialize spatial grids from code or from a yaml config file. 
+Equal Area Sea Ice Grids - A small python tool wrapping pyresample and pyproj functionality for commonly used spatial grids for sea ice remote sensing. 
