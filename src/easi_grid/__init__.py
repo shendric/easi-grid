@@ -15,7 +15,7 @@ from numbers import Real
 from pyresample import geometry
 
 
-from gridinit.presets import GridPresets, GridPresetEntry
+from easi_grid.presets import GridPresets, GridPresetEntry
 
 
 __all__ = ["Grid", "GridDefinition", "GridData", "GridPresets"]
@@ -241,11 +241,11 @@ class Grid(object):
             grid = Grid.from_preset(GridPresets.cci_ease2_nh_25km)
 
         :param preset_name_or_entry: Either the name of the preset (see
-            gridinit.GridPreset.names() or a field of `gridinit.GridPreset)
+            easi_grid.GridPreset.names() or a field of `easi_grid.GridPreset)
 
         :raises ValueError: Invalid input or grid preset name
 
-        :return: Initialized gridinit.Grid instance
+        :return: Initialized easi_grid.Grid instance
         """
         if isinstance(preset_name_or_entry, str):
             preset_names = GridPresets.names()
@@ -304,7 +304,7 @@ class Grid(object):
         return self._def.num_x, self._def.num_y
 
     def __repr__(self) -> str:
-        return f"gridinit.Grid: {self._def.repr}"
+        return f"easi_grid.Grid: {self._def.repr}"
 
 #     def grid_indices(self, longitude, latitude):
 #         """

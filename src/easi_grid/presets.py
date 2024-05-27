@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This module contains grid presets for the most common grid definitions
+This module contains grid presets for the most common sea ice remote sensing grid definitions
 """
 
 from numbers import Real
