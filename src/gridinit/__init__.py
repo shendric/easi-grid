@@ -98,11 +98,13 @@ class GridData(object):
     def get_nan_array(self) -> np.ndarray:
         return np.full((self.grid_def.num_y, self.grid_def.num_x), np.nan)
 
-    def get_lonlat_nc_vars(self) -> Dict[str, xr.Variable]:
+    def get_lonlat_nc_vars(self, y_reversed: bool = False) -> Dict[str, xr.Variable]:
+        lon = np.flipud(self.lon) if y_reversed else self.lon
+        lat = np.flipud(self.lat) if y_reversed else self.lat
         return {
             "lon": xr.Variable(
                 dims=("xc", "yc"),
-                data=self.lon,
+                data=lon,
                 attrs={
                     "units": "degrees_east",
                     "long_name": "longitude coordinate",
@@ -111,7 +113,7 @@ class GridData(object):
             ),
             "lat": xr.Variable(
                 dims=("xc", "yc"),
-                data=self.lat,
+                data=lat,
                 attrs={
                     "units": "degrees_north",
                     "long_name": "latitude coordinate",
