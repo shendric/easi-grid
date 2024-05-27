@@ -1,6 +1,6 @@
-# easi_grid
+# easi-grid
 
-Small python tool to generate typical geospatial grids for sea ice remote sensing.
+Equal Area Sea Ice Grids - A small python tool wrapping pyresample and pyproj functionality for commonly used spatial grids for sea ice remote sensing. 
 
 ## Scope
 
@@ -29,8 +29,6 @@ or with full developer packages:
 ```commandline
 pip install git+https://github.com/pysiral/easi_grid[dev,tests]
 ```
-
-
 
 ## Usage
 
