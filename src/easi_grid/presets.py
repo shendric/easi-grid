@@ -52,6 +52,20 @@ class GridPresets:
         50_000,
         "cci_ease2_sh_50km"
     )
+    sinxs_ease2_nh_25km: GridPresetEntry = GridPresetEntry(
+        6931,
+        (-4_450_000, 4_450_000, -4_450_000, 4_450_000),
+        25_000,
+        "sinxs_ease2_nh_25km"
+    )
+    sinxs_ease2_nh_12p5km: GridPresetEntry = GridPresetEntry(
+        6931,
+        (-4_450_000, 4_450_000, -4_450_000, 4_450_000),
+        12_500,
+        "sinxs_ease2_nh_12p5km"
+    )
+
+
 
     @classmethod
     def names(cls) -> List[str]:
