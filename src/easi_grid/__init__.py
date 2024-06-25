@@ -72,12 +72,22 @@ class GridDefinition(BaseModel):
     @computed_field
     @property
     def num_x(self) -> int:
-        return int((self.extent_m[1]-self.extent_m[0])/self.resolution_m)
+        return int(self.size_x/self.resolution_m)
 
     @computed_field
     @property
     def num_y(self) -> int:
-        return int((self.extent_m[3]-self.extent_m[2])/self.resolution_m)
+        return int(self.size_y/self.resolution_m)
+
+    @computed_field
+    @property
+    def size_x(self) -> float:
+        return self.extent_m[1]-self.extent_m[0]
+
+    @computed_field
+    @property
+    def size_y(self) -> float:
+        return self.extent_m[3]-self.extent_m[2]
 
     @computed_field
     @property
@@ -223,9 +233,7 @@ class Grid(object):
             resolution_m=resolution_m,
             id=grid_id
         )
-        self._data = GridData(
-            self._def
-        )
+        self._data = GridData(self._def)
 
     @classmethod
     def from_preset(cls, preset_name_or_entry: Union[str, GridPresetEntry]) -> "Grid":
@@ -274,6 +282,16 @@ class Grid(object):
             [xmin, ymin, xmax, ymax]
         )
 
+    def get_indices(self, longitude, latitude):
+        """
+        Computes the grid indices the given lon/lat pairs would be sorted
+        into (no clipping)
+        """
+        projx, projy = self.proj(longitude, latitude)
+        xi = np.floor((projx + self.size_x/2.0)/self.resolution_m)
+        yj = np.floor((projy + self.size_y/2.0)/self.resolution_m)
+        return xi, yj
+
     def get_definition(self) -> GridDefinition:
         return self._def
 
@@ -301,7 +319,39 @@ class Grid(object):
 
     @cached_property
     def array_shape(self) -> Tuple[int, int]:
-        return self._def.num_x, self._def.num_y
+        return self.num_y, self.num_x
+
+    @cached_property
+    def num_x(self) -> int:
+        return int(self._def.num_x)
+
+    @cached_property
+    def num_y(self) -> int:
+        return int(self._def.num_y)
+
+    @cached_property
+    def size_x(self) -> float:
+        return float(self._def.size_x)
+
+    @cached_property
+    def size_y(self) -> float:
+        return float(self._def.size_y)
+
+    @cached_property
+    def resolution_m(self) -> float:
+        return float(self._def.resolution_m)
+
+    @cached_property
+    def xc_km(self) -> np.ndarray:
+        return self._data.xc_km.copy()
+
+    @cached_property
+    def yc_km(self) -> np.ndarray:
+        return self._data.yc_km.copy()
+
+    @cached_property
+    def resolution_m(self) -> float:
+        return float(self._def.resolution_m)
 
     def __repr__(self) -> str:
         return f"easi_grid.Grid: {self._def.repr}"
