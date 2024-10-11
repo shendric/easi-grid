@@ -101,20 +101,19 @@ class GridDefinition(BaseModel):
 
 class GridData(object):
 
-    def __init__(self, grid_def: GridDefinition):
+    def __init__(self, grid_def: GridDefinition, y_reversed: bool = False):
         self.grid_def = grid_def
+        self.y_reversed = y_reversed
         self.lon, self.lat = self._compute_grid_coordinates()
 
     def get_nan_array(self) -> np.ndarray:
         return np.full((self.grid_def.num_y, self.grid_def.num_x), np.nan)
 
-    def get_lonlat_nc_vars(self, y_reversed: bool = False) -> Dict[str, xr.Variable]:
-        lon = np.flipud(self.lon) if y_reversed else self.lon
-        lat = np.flipud(self.lat) if y_reversed else self.lat
+    def get_lonlat_nc_vars(self) -> Dict[str, xr.Variable]:
         return {
             "lon": xr.Variable(
                 dims=("xc", "yc"),
-                data=lon,
+                data=self.lon,
                 attrs={
                     "units": "degrees_east",
                     "long_name": "longitude coordinate",
@@ -123,7 +122,7 @@ class GridData(object):
             ),
             "lat": xr.Variable(
                 dims=("xc", "yc"),
-                data=lat,
+                data=self.lat,
                 attrs={
                     "units": "degrees_north",
                     "long_name": "latitude coordinate",
@@ -150,7 +149,7 @@ class GridData(object):
                 data=xc,
                 attrs={
                     "axis": "X",
-                    "units": "km",
+                    "units": unit,
                     "long_name": "x coordinate in Cartesian system",
                     "standard_name": "projection_x_coordinate",
                 }
@@ -160,7 +159,7 @@ class GridData(object):
                 data=yc,
                 attrs={
                     "axis": "Y",
-                    "units": "km",
+                    "units": unit,
                     "long_name": "y coordinate in Cartesian system",
                     "standard_name": "projection_y_coordinate",
                 }
@@ -201,11 +200,12 @@ class GridData(object):
     @cached_property
     def yc(self):
         pad = self.grid_def.resolution_m/2.
-        return np.linspace(
+        yc = np.linspace(
             self.grid_def.extent_m[2]+pad,
             self.grid_def.extent_m[3]-pad,
             num=self.grid_def.num_y
         )
+        return yc if not self.y_reversed else np.flip(yc)
 
     @cached_property
     def xc_km(self):
@@ -225,18 +225,20 @@ class Grid(object):
             epsg: str,
             extent_m: Tuple[Real, Real, Real, Real],
             resolution_m: Real,
-            grid_id: str = None
+            grid_id: str = None,
+            y_reversed: bool = False
     ):
         self._def = GridDefinition(
             epsg=epsg,
             extent_m=extent_m,
             resolution_m=resolution_m,
-            id=grid_id
+            id=grid_id,
+            y_reversed=y_reversed
         )
-        self._data = GridData(self._def)
+        self._data = GridData(self._def, y_reversed=y_reversed)
 
     @classmethod
-    def from_preset(cls, preset_name_or_entry: Union[str, GridPresetEntry]) -> "Grid":
+    def from_preset(cls, preset_name_or_entry: Union[str, GridPresetEntry], **kwargs) -> "Grid":
         """
         Returns initialized instance based on preset.
 
@@ -264,7 +266,7 @@ class Grid(object):
             preset_dict = preset_name_or_entry.asdict()
         else:
             raise ValueError(f"Invalid preset name of preset: {preset_name_or_entry=}")
-
+        preset_dict.update(kwargs)
         return cls(**preset_dict)
 
     def get_data(self) -> GridData:
