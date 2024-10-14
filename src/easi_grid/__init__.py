@@ -34,6 +34,9 @@ class GridDefinition(BaseModel):
         description="Spatial resolution in meter (isotropic grid resolution)"
     )
     id: Optional[str] = None
+    y_reversed: bool = Field(
+        description="Flag if y axis is reversed"
+    )
 
     @field_validator("epsg")
     @classmethod
