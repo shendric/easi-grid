@@ -112,7 +112,7 @@ class GridData(object):
     def get_lonlat_nc_vars(self) -> Dict[str, xr.Variable]:
         return {
             "lon": xr.Variable(
-                dims=("xc", "yc"),
+                dims=("yc", "xc"),
                 data=self.lon,
                 attrs={
                     "units": "degrees_east",
@@ -121,7 +121,7 @@ class GridData(object):
                 }
             ),
             "lat": xr.Variable(
-                dims=("xc", "yc"),
+                dims=("yc", "xc"),
                 data=self.lat,
                 attrs={
                     "units": "degrees_north",
