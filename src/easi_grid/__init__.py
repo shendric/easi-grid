@@ -322,6 +322,10 @@ class Grid(object):
     def id(self) -> str:
         return str(self._def.id)
 
+    @property
+    def epsg(self) -> int:
+        return int(self._def.epsg)
+
     @cached_property
     def array_shape(self) -> Tuple[int, int]:
         return self.num_y, self.num_x
