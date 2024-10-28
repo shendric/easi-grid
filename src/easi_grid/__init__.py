@@ -276,7 +276,7 @@ class Grid(object):
         return self._data
 
     def get_nan_array(self, time_dim=False) -> np.ndarray:
-        return self._data.get_nan_array() if not time_dim else [self._data.get_nan_array()]
+        return self._data.get_nan_array() if not time_dim else np.expand_dims(self._data.get_nan_array(), 0)
 
     def get_pyresample_geometry(self) -> geometry.AreaDefinition:
         grid_def = self.get_definition()
