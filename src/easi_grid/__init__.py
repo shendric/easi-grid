@@ -293,8 +293,8 @@ class Grid(object):
         into (no clipping)
         """
         projx, projy = self.proj(longitude, latitude)
-        xi = np.floor((projx + self.size_x/2.0)/self.resolution_m)
-        yj = np.floor((projy + self.size_y/2.0)/self.resolution_m)
+        xi = np.floor((projx + self.size_x/2.0)/self.resolution_m).astype(int)
+        yj = np.floor((projy + self.size_y/2.0)/self.resolution_m).astype(int)
         return xi, yj
 
     def get_definition(self) -> GridDefinition:
