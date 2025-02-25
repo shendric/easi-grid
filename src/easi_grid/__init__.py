@@ -295,6 +295,8 @@ class Grid(object):
         projx, projy = self.proj(longitude, latitude)
         xi = np.floor((projx + self.size_x/2.0)/self.resolution_m).astype(int)
         yj = np.floor((projy + self.size_y/2.0)/self.resolution_m).astype(int)
+        if self._data.y_reversed:
+            yj = self.num_y - yj - 1
         return xi, yj
 
     def get_definition(self) -> GridDefinition:
