@@ -185,11 +185,18 @@ class GridData(object):
     @cached_property
     def grid_mapping(self) -> Tuple[str, Dict]:
         grid_mapping_dict = self.grid_def.crs.to_cf()
-        with contextlib.suppress(UserWarning):
-            grid_mapping_dict["proj4_str"] = self.grid_def.crs.to_proj4()
-        grid_mapping_name = str(grid_mapping_dict["grid_mapping_name"])
-        grid_mapping_dict.pop("crs_wkt")
-        return grid_mapping_name, grid_mapping_dict
+        if "grid_mapping_name" in grid_mapping_dict:
+            with contextlib.suppress(UserWarning):
+                grid_mapping_dict["proj4_str"] = self.grid_def.crs.to_proj4()
+            grid_mapping_name = str(grid_mapping_dict["grid_mapping_name"])
+            grid_mapping_dict.pop("crs_wkt")
+            return grid_mapping_name, grid_mapping_dict
+        else:
+
+            grid_mapping_dict.update(**self.grid_def.crs.to_dict())
+            grid_mapping_dict.pop("crs_wkt")
+            grid_mapping_dict.pop("no_defs")
+            return "mapping", grid_mapping_dict
 
     @cached_property
     def xc(self):
