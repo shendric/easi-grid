@@ -288,8 +288,12 @@ class Grid(object):
     def get_pyresample_geometry(self) -> geometry.AreaDefinition:
         grid_def = self.get_definition()
         xmin, xmax, ymin, ymax = grid_def.extent_m
+        try:
+            grid_mapping_name = grid_def.crs.to_cf()["grid_mapping_name"]
+        except KeyError:
+            grid_mapping_name = grid_def.crs.name
         return geometry.AreaDefinition(
-            grid_def.id, grid_def.name, grid_def.crs.to_cf()["grid_mapping_name"],
+            grid_def.id, grid_def.name, grid_mapping_name,
             grid_def.crs.to_dict(), grid_def.num_x, grid_def.num_y,
             [xmin, ymin, xmax, ymax]
         )
