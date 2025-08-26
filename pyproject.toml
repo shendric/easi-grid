@@ -24,6 +24,7 @@ classifiers = [
 ]
 
 dependencies = [
+    "geopandas",
     "numpy",
     "pydantic",
     "pyproj",

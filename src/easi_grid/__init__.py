@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import geopandas
 import numpy as np
 import xarray as xr
 import contextlib
@@ -342,6 +342,16 @@ class Grid(object):
     @cached_property
     def array_shape(self) -> Tuple[int, int]:
         return self.num_y, self.num_x
+
+    @cached_property
+    def bounding_box_geom(self) -> geopandas.GeoSeries:
+        """
+        Return the bounding box of the grid as a geopandas GeoSeries
+        """
+        x_min, x_max, y_min, y_max = self._def.extent_m
+        x = [x_min, x_max, x_max, x_min, x_min]
+        y = [y_min, y_min, y_max, y_max, y_min]
+        return geopandas.GeoSeries.from_xy(x, y, crs=self._def.crs)
 
     @cached_property
     def num_x(self) -> int:
