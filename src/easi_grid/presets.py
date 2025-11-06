@@ -65,8 +65,6 @@ class GridPresets:
         "sinxs_ease2_nh_12p5km"
     )
 
-
-
     @classmethod
     def names(cls) -> List[str]:
         return [f.name for f in fields(cls)]
